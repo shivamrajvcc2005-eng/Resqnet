@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Response Dashboard — ResQNet</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <style>
+
+        /* =========================================
+           DASHBOARD PAGE
+        ========================================= */
+
+        .dashboard-page {
+            min-height: 100vh;
+            padding: 118px 24px 70px;
+            background:
+                radial-gradient(
+                    circle at 85% 8%,
+                    rgba(255,48,69,.07),
+                    transparent 28%
+                ),
+                var(--bg);
+        }
+
+        .dashboard-container {
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+
+        /* =========================================
+           RESQNET LOGO
+        ========================================= */
+
+        .navbar .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .navbar .logo-mark {
+            width: 46px;
+            height: 46px;
+            min-width: 46px;
+            border-radius: 13px;
+            display: grid;
+            place-items: center;
+            background: #ff3045;
+            color: #ffffff;
+            font-size: 25px;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .navbar .logo-word {
+            display: inline-flex;
+            align-items: center;
+            gap: 0;
+            margin: 0;
+            padding: 0;
+            font-size: 26px;
+            font-weight: 900;
+            letter-spacing: -1.4px;
+            line-height: 1;
+            white-space: nowrap;
+        }
+
+        .navbar .logo-word .logo-red {
+            color: #ff3045;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        /* =========================================
+           DASHBOARD HEADER
+        ========================================= */
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .dashboard-header-left {
+            min-width: 0;
+        }
+
+        .dashboard-kicker {
+            color: var(--red-light);
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .14em;
+            margin-bottom: 9px;
+        }
+
+        .dashboard-header h1 {
+            margin: 0;
+            font-size: clamp(2rem, 4vw, 3rem);
+            letter-spacing: -1.5px;
+            line-height: 1.05;
+        }
+
+        .dashboard-header p {
+            margin: 10px 0 0;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .dashboard-header-actions {
+            display: flex;
+            gap: 9px;
+            flex-wrap: wrap;
+        }
+
+        .dashboard-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 11px 15px;
+            background: rgba(255,255,255,.025);
+            color: var(--text);
+            font-size: 12px;
+            font-weight: 700;
+            transition: .2s ease;
+        }
+
+        .dashboard-btn:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-1px);
+        }
+
+        .dashboard-btn.primary {
+            background: var(--red);
+            border-color: var(--red);
+            color: white;
+        }
+
+        .dashboard-btn.primary:hover {
+            background: var(--red-light);
+            border-color: var(--red-light);
+        }
+
+
+        /* =========================================
+           STATS
+        ========================================= */
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 13px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            position: relative;
+            overflow: hidden;
+            padding: 20px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,.035),
+                    rgba(255,255,255,.012)
+                );
+        }
+
+        .stat-card::after {
+            content: "";
+            position: absolute;
+            right: -35px;
+            bottom: -45px;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(255,48,69,.045);
+            pointer-events: none;
+        }
+
+        .stat-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+        .stat-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            display: grid;
+            place-items: center;
+            background: var(--red-soft);
+            border: 1px solid rgba(255,48,69,.13);
+            color: var(--red-light);
+            font-size: 16px;
+            font-weight: 900;
+        }
+
+        .stat-value {
+            margin-top: 15px;
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            line-height: 1;
+        }
+
+        .stat-note {
+            margin-top: 9px;
+            color: var(--muted2);
+            font-size: 11px;
+        }
+
+
+        /* =========================================
+           MAIN DASHBOARD GRID
+        ========================================= */
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
+            gap: 20px;
+            align-items: start;
+        }
+
+        .dashboard-card {
+            background: rgba(8,14,21,.88);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-header h2 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .card-header p {
+            margin: 4px 0 0;
+            color: var(--muted2);
+            font-size: 11px;
+        }
+
+
+        /* =========================================
+           FILTERS
+        ========================================= */
+
+        .filters {
+            display: grid;
+            grid-template-columns: minmax(150px, 1.5fr) 1fr 1fr auto;
+            gap: 8px;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .filter-input,
+        .filter-select {
+            width: 100%;
+            box-sizing: border-box;
+            min-width: 0;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            background: #070d14;
+            color: var(--text);
+            padding: 10px 11px;
+            outline: none;
+            font: inherit;
+            font-size: 11px;
+        }
+
+        .filter-input:focus,
+        .filter-select:focus {
+            border-color: rgba(255,48,69,.45);
+        }
+
+        .clear-btn {
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            padding: 0 12px;
+            background: rgba(255,255,255,.025);
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 700;
+            min-height: 36px;
+        }
+
+        .clear-btn:hover {
+            color: var(--text);
+            border-color: var(--border-hover);
+        }
+
+
+        /* =========================================
+           INCIDENT LIST
+        ========================================= */
+
+        .incident-list {
+            padding: 12px;
+        }
+
+        .incident-item {
+            position: relative;
+            padding: 15px;
+            margin-bottom: 9px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: rgba(255,255,255,.014);
+            transition: .2s ease;
+        }
+
+        .incident-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .incident-item:hover {
+            border-color: var(--border-hover);
+            background: rgba(255,255,255,.022);
+        }
+
+        .incident-item.resolved {
+            opacity: .72;
+        }
+
+        .incident-main {
+            min-width: 0;
+        }
+
+        .incident-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .incident-title-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            min-width: 0;
+        }
+
+        .incident-type {
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .incident-id-small {
+            color: var(--muted2);
+            font-family: monospace;
+            font-size: 10px;
+        }
+
+
+        /* =========================================
+           STATUS BADGES
+        ========================================= */
+
+        .status-badge,
+        .priority-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 999px;
+            padding: 5px 8px;
+            font-size: 9px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .status-badge {
+            background: rgba(255,255,255,.045);
+            color: var(--muted);
+            border: 1px solid var(--border);
+        }
+
+        .status-badge.reported {
+            color: #ff8d99;
+            background: rgba(255,48,69,.07);
+            border-color: rgba(255,48,69,.14);
+        }
+
+        .status-badge.acknowledged {
+            color: #ff9eaa;
+            background: rgba(255,48,69,.085);
+            border-color: rgba(255,48,69,.16);
+        }
+
+        .status-badge.responding {
+            color: #ff7885;
+            background: rgba(255,48,69,.10);
+            border-color: rgba(255,48,69,.2);
+        }
+
+        .status-badge.resolved {
+            color: #91a0ad;
+            background: rgba(255,255,255,.035);
+            border-color: rgba(255,255,255,.08);
+        }
+
+        .priority-badge {
+            background: rgba(255,48,69,.08);
+            color: var(--red-light);
+            border: 1px solid rgba(255,48,69,.16);
+        }
+
+        .priority-badge.medium {
+            color: #c4cbd2;
+            background: rgba(255,255,255,.035);
+            border-color: rgba(255,255,255,.08);
+        }
+
+        .priority-badge.low {
+            color: #8f9aa5;
+            background: rgba(255,255,255,.025);
+            border-color: rgba(255,255,255,.06);
+        }
+
+
+        /* =========================================
+           INCIDENT META
+        ========================================= */
+
+        .incident-meta {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 11px;
+            color: var(--muted);
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        .incident-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .incident-location {
+            margin-top: 8px;
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.5;
+            word-break: break-word;
+        }
+
+
+        /* =========================================
+           ASSIGNMENT
+        ========================================= */
+
+        .assignment-preview {
+            margin-top: 11px;
+            padding: 10px 11px;
+            border-radius: 9px;
+            background: rgba(255,48,69,.045);
+            border: 1px solid rgba(255,48,69,.10);
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        .assignment-preview strong {
+            color: var(--text);
+        }
+
+        .assignment-preview span {
+            color: var(--red-light);
+        }
+
+
+        .incident-actions {
+            display: flex;
+            gap: 7px;
+            margin-top: 13px;
+            flex-wrap: wrap;
+        }
+
+        .details-btn,
+        .assign-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            border-radius: 8px;
+            padding: 8px 11px;
+            font-size: 10px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .details-btn {
+            color: var(--text);
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,.025);
+        }
+
+        .assign-btn {
+            color: white;
+            border: 1px solid var(--red);
+            background: var(--red);
+        }
+
+        .details-btn:hover {
+            border-color: var(--border-hover);
+        }
+
+        .assign-btn:hover {
+            background: var(--red-light);
+            border-color: var(--red-light);
+        }
+
+
+        /* =========================================
+           ASSIGNMENT PANEL
+        ========================================= */
+
+        .assignment-panel {
+            display: none;
+            margin-top: 13px;
+            padding: 13px;
+            border-radius: 11px;
+            border: 1px solid rgba(255,48,69,.14);
+            background: rgba(255,48,69,.035);
+        }
+
+        .assignment-panel.open {
+            display: block;
+        }
+
+        .assignment-panel h4 {
+            margin: 0 0 11px;
+            font-size: 12px;
+        }
+
+        .assignment-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .assignment-form .full {
+            grid-column: 1 / -1;
+        }
+
+        .assignment-form select,
+        .assignment-form input {
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 9px 10px;
+            background: #070d14;
+            color: var(--text);
+            outline: none;
+            font: inherit;
+            font-size: 10px;
+        }
+
+        .assignment-form select:focus,
+        .assignment-form input:focus {
+            border-color: rgba(255,48,69,.45);
+        }
+
+        .assignment-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 7px;
+            margin-top: 9px;
+        }
+
+        .assignment-actions button {
+            border-radius: 8px;
+            padding: 8px 11px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .cancel-assignment {
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,.025);
+            color: var(--muted);
+        }
+
+        .save-assignment {
+            border: 1px solid var(--red);
+            background: var(--red);
+            color: white;
+        }
+
+        .save-assignment:hover {
+            background: var(--red-light);
+        }
+
+
+        /* =========================================
+           MAP
+        ========================================= */
+
+        .map-card-body {
+            padding: 12px;
+        }
+
+        #dashboardMap {
+            width: 100%;
+            height: 520px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .map-legend {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            padding: 12px 4px 2px;
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        .legend-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--red);
+        }
+
+        .legend-dot.resolved {
+            background: #7d8994;
+        }
+
+        .leaflet-popup-content-wrapper,
+        .leaflet-popup-tip {
+            background: #0b131c;
+            color: #f7f9fc;
+        }
+
+        .leaflet-popup-content {
+            font-family: inherit;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .map-popup-title {
+            font-weight: 800;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .map-popup-meta {
+            color: #9aa6b3;
+            margin-bottom: 7px;
+        }
+
+        .map-popup-link {
+            color: #ff6673;
+            text-decoration: none;
+            font-weight: 800;
+        }
+
+
+        /* =========================================
+           EMPTY STATES
+        ========================================= */
+
+        .empty-state,
+        .no-results {
+            padding: 45px 20px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .empty-icon {
+            width: 45px;
+            height: 45px;
+            margin: 0 auto 13px;
+            display: grid;
+            place-items: center;
+            border-radius: 13px;
+            background: var(--red-soft);
+            color: var(--red-light);
+            font-size: 18px;
+        }
+
+        .empty-state strong,
+        .no-results strong {
+            display: block;
+            color: var(--text);
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
+
+        .empty-state span,
+        .no-results span {
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+
+        /* =========================================
+           TOAST
+        ========================================= */
+
+        #toast {
+            position: fixed;
+            right: 22px;
+            bottom: 22px;
+            z-index: 9999;
+            max-width: 330px;
+            padding: 13px 16px;
+            border-radius: 10px;
+            background: #111923;
+            border: 1px solid rgba(255,255,255,.1);
+            color: white;
+            font-size: 12px;
+            box-shadow: 0 12px 35px rgba(0,0,0,.35);
+            opacity: 0;
+            transform: translateY(15px);
+            pointer-events: none;
+            transition: .25s ease;
+        }
+
+        #toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+
+        /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+        @media (max-width: 1050px) {
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            #dashboardMap {
+                height: 400px;
+            }
+
+        }
+
+
+        @media (max-width: 850px) {
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .dashboard-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .filters {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .filters .filter-input {
+                grid-column: 1 / -1;
+            }
+
+            .filters .clear-btn {
+                min-height: 36px;
+            }
+
+        }
+
+
+        @media (max-width: 600px) {
+
+            .dashboard-page {
+                padding: 100px 14px 50px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 9px;
+            }
+
+            .stat-card {
+                padding: 15px;
+            }
+
+            .stat-value {
+                font-size: 26px;
+            }
+
+            .dashboard-header h1 {
+                font-size: 32px;
+            }
+
+            .dashboard-header-actions {
+                width: 100%;
+            }
+
+            .dashboard-btn {
+                flex: 1;
+            }
+
+            .filters {
+                grid-template-columns: 1fr;
+            }
+
+            .filters .filter-input {
+                grid-column: auto;
+            }
+
+            .incident-top {
+                flex-direction: column;
+            }
+
+            .assignment-form {
+                grid-template-columns: 1fr;
+            }
+
+            .assignment-form .full {
+                grid-column: auto;
+            }
+
+            #dashboardMap {
+                height: 300px;
+            }
+
+            .navbar .logo-mark {
+                width: 42px;
+                height: 42px;
+                min-width: 42px;
+                font-size: 22px;
+            }
+
+            .navbar .logo-word {
+                font-size: 23px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================================
+         NAVBAR
+    ========================================= -->
+
+    <nav class="navbar">
+
+        <div class="nav-container">
+
+
+            <!-- RESQNET LOGO -->
+
+            <a
+                href="index.html"
+                class="logo"
+            >
+
+                <span class="logo-mark">
+                    R
+                </span>
+
+                <span class="logo-word">
+                    <span>ResQ</span><span class="logo-red">Net</span>
+                </span>
+
+            </a>
+
+
+            <div class="nav-links">
+
+                <a href="index.html">
+                    Home
+                </a>
+
+                <a href="index.html#how-it-works">
+                    How It Works
+                </a>
+
+                <a href="index.html#features">
+                    Features
+                </a>
+
+                <a
+                    href="dashboard.html"
+                    class="active"
+                >
+                    Dashboard
+                </a>
+
+            </div>
+
+
+            <a
+                href="report.html"
+                class="nav-cta"
+            >
+                Report Emergency
+            </a>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- =========================================
+         DASHBOARD
+    ========================================= -->
+
+    <main class="dashboard-page">
+
+        <div class="dashboard-container">
+
+
+            <!-- HEADER -->
+
+            <header class="dashboard-header">
+
+                <div class="dashboard-header-left">
+
+                    <div class="dashboard-kicker">
+                        RESQNET RESPONSE SYSTEM
+                    </div>
+
+                    <h1>
+                        Response Dashboard
+                    </h1>
+
+                    <p>
+                        Monitor emergencies and coordinate response teams.
+                    </p>
+
+                </div>
+
+
+                <div class="dashboard-header-actions">
+
+                    <a
+                        href="index.html"
+                        class="dashboard-btn"
+                    >
+                        ← Home
+                    </a>
+
+                    <a
+                        href="report.html"
+                        class="dashboard-btn primary"
+                    >
+                        + Report Emergency
+                    </a>
+
+                </div>
+
+            </header>
+
+
+
+            <!-- =========================================
+                 STATS
+            ========================================= -->
+
+            <section class="stats-grid">
+
+
+                <!-- TOTAL -->
+
+                <div class="stat-card">
+
+                    <div class="stat-top">
+
+                        <div class="stat-label">
+                            Total Incidents
+                        </div>
+
+                        <div class="stat-icon">
+                            #
+                        </div>
+
+                    </div>
+
+                    <div
+                        class="stat-value"
+                        id="totalIncidents"
+                    >
+                        0
+                    </div>
+
+                    <div class="stat-note">
+                        All reported emergencies
+                    </div>
+
+                </div>
+
+
+                <!-- ACTIVE -->
+
+                <div class="stat-card">
+
+                    <div class="stat-top">
+
+                        <div class="stat-label">
+                            Active
+                        </div>
+
+                        <div class="stat-icon">
+                            !
+                        </div>
+
+                    </div>
+
+                    <div
+                        class="stat-value"
+                        id="activeIncidents"
+                    >
+                        0
+                    </div>
+
+                    <div class="stat-note">
+                        Incidents requiring response
+                    </div>
+
+                </div>
+
+
+                <!-- PRIORITY -->
+
+                <div class="stat-card">
+
+                    <div class="stat-top">
+
+                        <div class="stat-label">
+                            High Priority
+                        </div>
+
+                        <div class="stat-icon">
+                            ↑
+                        </div>
+
+                    </div>
+
+                    <div
+                        class="stat-value"
+                        id="priorityIncidents"
+                    >
+                        0
+                    </div>
+
+                    <div class="stat-note">
+                        Critical or high severity
+                    </div>
+
+                </div>
+
+
+                <!-- RESOLVED -->
+
+                <div class="stat-card">
+
+                    <div class="stat-top">
+
+                        <div class="stat-label">
+                            Resolved
+                        </div>
+
+                        <div class="stat-icon">
+                            ✓
+                        </div>
+
+                    </div>
+
+                    <div
+                        class="stat-value"
+                        id="resolvedIncidents"
+                    >
+                        0
+                    </div>
+
+                    <div class="stat-note">
+                        Successfully closed incidents
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =========================================
+                 MAIN GRID
+            ========================================= -->
+
+            <section class="dashboard-grid">
+
+
+                <!-- =====================================
+                     INCIDENT REPORTS
+                ====================================== -->
+
+                <div class="dashboard-card">
+
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <h2>
+                                Incident Reports
+                            </h2>
+
+                            <p>
+                                Review and coordinate emergency responses.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- FILTERS -->
+
+                    <div class="filters">
+
+
+                        <input
+                            type="search"
+                            id="incidentSearch"
+                            class="filter-input"
+                            placeholder="Search incident, ID or location..."
+                        >
+
+
+                        <select
+                            id="statusFilter"
+                            class="filter-select"
+                        >
+
+                            <option value="all">
+                                All Status
+                            </option>
+
+                            <option value="Reported">
+                                Reported
+                            </option>
+
+                            <option value="Acknowledged">
+                                Acknowledged
+                            </option>
+
+                            <option value="Responding">
+                                Responding
+                            </option>
+
+                            <option value="Resolved">
+                                Resolved
+                            </option>
+
+                        </select>
+
+
+                        <select
+                            id="severityFilter"
+                            class="filter-select"
+                        >
+
+                            <option value="all">
+                                All Severity
+                            </option>
+
+                            <option value="Critical">
+                                Critical
+                            </option>
+
+                            <option value="High">
+                                High
+                            </option>
+
+                            <option value="Medium">
+                                Medium
+                            </option>
+
+                            <option value="Low">
+                                Low
+                            </option>
+
+                        </select>
+
+
+                        <button
+                            type="button"
+                            id="clearFilters"
+                            class="clear-btn"
+                        >
+                            Clear
+                        </button>
+
+                    </div>
+
+
+
+                    <!-- INCIDENT LIST -->
+
+                    <div
+                        id="incidentList"
+                        class="incident-list"
+                    >
+
+                        <div class="empty-state">
+
+                            <div class="empty-icon">
+                                ✓
+                            </div>
+
+                            <strong>
+                                No incidents yet
+                            </strong>
+
+                            <span>
+                                Reported emergencies will appear here.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =====================================
+                     LIVE MAP
+                ====================================== -->
+
+                <div class="dashboard-card">
+
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <h2>
+                                Live Response Map
+                            </h2>
+
+                            <p>
+                                Incident locations and response activity.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="map-card-body">
+
+                        <div id="dashboardMap"></div>
+
+
+                        <div class="map-legend">
+
+                            <div class="legend-item">
+
+                                <span class="legend-dot"></span>
+
+                                Active Incident
+
+                            </div>
+
+
+                            <div class="legend-item">
+
+                                <span class="legend-dot resolved"></span>
+
+                                Resolved
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </section>
+
+
+        </div>
+
+    </main>
+
+
+
+    <!-- TOAST -->
+
+    <div id="toast"></div>
+
+
+
+    <!-- =========================================
+         LEAFLET
+    ========================================= -->
+
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    ></script>
+
+
+
+    <!-- =========================================
+         DASHBOARD JS
+    ========================================= -->
+
+    <script src="dashboard.js"></script>
+    <script src="auth.js"></script>
+
+
+</body>
+</html>

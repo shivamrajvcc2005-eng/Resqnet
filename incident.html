@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Incident Response | ResQNet</title>
+
+    <!-- Leaflet Map CSS -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <!-- Main Theme -->
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+
+        /* ==========================================
+           INCIDENT PAGE
+        ========================================== */
+
+        .incident-page {
+            padding: 110px 0 70px;
+            min-height: 100vh;
+        }
+
+        .incident-container {
+            width: min(1180px, calc(100% - 40px));
+            margin: 0 auto;
+        }
+
+
+        /* ==========================================
+           NAVBAR
+           ONLY HOME + REPORT EMERGENCY MOVED RIGHT
+        ========================================== */
+
+        .navbar .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .navbar .nav-links {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .navbar .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .navbar .nav-links a:hover {
+            color: var(--red);
+        }
+
+
+        /* ==========================================
+           BREADCRUMB
+        ========================================== */
+
+        .incident-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 22px;
+        }
+
+        .incident-breadcrumb a {
+            color: var(--muted);
+            text-decoration: none;
+        }
+
+        .incident-breadcrumb a:hover {
+            color: var(--text);
+        }
+
+
+        /* ==========================================
+           HERO
+        ========================================== */
+
+        .incident-hero {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 25px;
+            margin-bottom: 28px;
+        }
+
+        .incident-hero-left {
+            min-width: 0;
+        }
+
+        .incident-kicker {
+            color: var(--red);
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+        }
+
+        .incident-title {
+            margin: 0;
+            color: var(--text);
+            font-size: clamp(28px, 4vw, 44px);
+            line-height: 1.05;
+            font-weight: 900;
+            letter-spacing: -1.5px;
+        }
+
+        .incident-subtitle {
+            margin: 10px 0 0;
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        .incident-id {
+            color: var(--red-light);
+            font-weight: 800;
+        }
+
+
+        /* ==========================================
+           STATUS CONTROL
+        ========================================== */
+
+        .status-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border: 1px solid var(--border);
+            background: rgba(10,17,26,.88);
+            border-radius: 14px;
+            flex-shrink: 0;
+        }
+
+        .status-control select {
+            min-width: 150px;
+            background: #0d1722;
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 9px;
+            padding: 10px 12px;
+            outline: none;
+        }
+
+        .status-control select:focus {
+            border-color: rgba(255,48,69,.55);
+        }
+
+        .status-control button {
+            border: 0;
+            background: var(--red);
+            color: white;
+            font-weight: 800;
+            border-radius: 9px;
+            padding: 10px 14px;
+            cursor: pointer;
+        }
+
+        .status-control button:hover {
+            background: var(--red-light);
+        }
+
+
+        /* ==========================================
+           GRID
+        ========================================== */
+
+        .incident-grid {
+            display: grid;
+            grid-template-columns:
+                minmax(0, 1.5fr)
+                minmax(320px, .85fr);
+
+            gap: 20px;
+        }
+
+        .incident-left,
+        .incident-right {
+            min-width: 0;
+        }
+
+        .incident-left {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .incident-right {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+
+        /* ==========================================
+           CARD
+        ========================================== */
+
+        .incident-card {
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(13,23,34,.92),
+                    rgba(7,13,20,.96)
+                );
+
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 22px;
+        }
+
+        .incident-card-title {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .incident-card-title h2 {
+            margin: 0;
+            color: var(--text);
+            font-size: 19px;
+            font-weight: 850;
+        }
+
+        .incident-card-title span {
+            display: block;
+            margin-top: 4px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .update-count {
+            white-space: nowrap;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+
+        /* ==========================================
+           RESPONSE TIMELINE
+        ========================================== */
+
+        .timeline {
+            position: relative;
+            padding: 8px 0 5px;
+        }
+
+        .timeline::before {
+            content: "";
+            position: absolute;
+            left: 13px;
+            top: 20px;
+            bottom: 22px;
+            width: 2px;
+
+            background:
+                linear-gradient(
+                    to bottom,
+                    rgba(255,48,69,.85),
+                    rgba(255,48,69,.15)
+                );
+        }
+
+        .timeline-item {
+            position: relative;
+
+            display: grid;
+
+            grid-template-columns:
+                28px
+                minmax(0, 1fr);
+
+            gap: 16px;
+
+            padding-bottom: 18px;
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .timeline-dot {
+            position: relative;
+            z-index: 2;
+
+            width: 28px;
+            height: 28px;
+
+            border-radius: 50%;
+
+            display: grid;
+            place-items: center;
+
+            background: #101923;
+
+            border:
+                2px solid
+                rgba(255,48,69,.75);
+        }
+
+        .timeline-dot::after {
+            content: "";
+
+            width: 8px;
+            height: 8px;
+
+            border-radius: 50%;
+
+            background: var(--red);
+        }
+
+        .timeline-content {
+            min-width: 0;
+
+            padding: 14px 16px;
+
+            border-radius: 12px;
+
+            border:
+                1px solid
+                var(--border);
+
+            background:
+                rgba(255,255,255,.025);
+        }
+
+        .timeline-item.latest
+        .timeline-content {
+
+            border-color:
+                rgba(255,48,69,.28);
+
+            background:
+                rgba(255,48,69,.045);
+        }
+
+        .timeline-item.latest
+        .timeline-dot {
+
+            background:
+                rgba(255,48,69,.12);
+
+            border-color:
+                var(--red);
+        }
+
+        .timeline-status {
+            color: var(--text);
+
+            font-size: 15px;
+
+            font-weight: 850;
+        }
+
+        .timeline-time {
+            color: var(--muted2);
+
+            font-size: 12px;
+
+            margin-top: 5px;
+        }
+
+
+        /* ==========================================
+           DETAILS
+        ========================================== */
+
+        .details-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 12px;
+        }
+
+        .detail-box {
+            padding: 15px;
+
+            border-radius: 12px;
+
+            border:
+                1px solid
+                var(--border);
+
+            background:
+                rgba(255,255,255,.022);
+        }
+
+        .detail-label {
+            color: var(--muted2);
+
+            font-size: 11px;
+
+            text-transform: uppercase;
+
+            letter-spacing: .7px;
+
+            font-weight: 800;
+
+            margin-bottom: 6px;
+        }
+
+        .detail-value {
+            color: var(--text);
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            word-break: break-word;
+        }
+
+        .description-box {
+            margin-top: 12px;
+
+            padding: 16px;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 12px;
+
+            background:
+                rgba(255,255,255,.022);
+        }
+
+        .description-text {
+            color: var(--muted);
+
+            line-height: 1.7;
+
+            font-size: 14px;
+
+            white-space: pre-wrap;
+        }
+
+
+        /* ==========================================
+           STATUS BADGE
+        ========================================== */
+
+        .status-badge {
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            padding: 7px 10px;
+
+            border-radius: 999px;
+
+            background:
+                rgba(255,48,69,.10);
+
+            border:
+                1px solid
+                rgba(255,48,69,.18);
+
+            color: var(--red-light);
+
+            font-size: 12px;
+
+            font-weight: 800;
+        }
+
+        .status-badge::before {
+            content: "";
+
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background:
+                var(--red);
+        }
+
+
+        /* ==========================================
+           MAP
+        ========================================== */
+
+        .incident-map {
+            width: 100%;
+
+            height: 340px;
+
+            border-radius: 13px;
+
+            overflow: hidden;
+
+            border:
+                1px solid
+                var(--border);
+        }
+
+
+        /* ==========================================
+           RESPONSE TEAM
+        ========================================== */
+
+        .team-list {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 10px;
+        }
+
+        .team-row {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 15px;
+
+            padding: 13px 14px;
+
+            border:
+                1px solid
+                var(--border);
+
+            background:
+                rgba(255,255,255,.022);
+
+            border-radius: 11px;
+        }
+
+        .team-label {
+            color: var(--muted2);
+
+            font-size: 12px;
+        }
+
+        .team-value {
+            color: var(--text);
+
+            font-size: 13px;
+
+            font-weight: 750;
+
+            text-align: right;
+        }
+
+
+        /* ==========================================
+           LOCATION
+        ========================================== */
+
+        .location-text {
+            margin-top: 12px;
+
+            padding: 13px 14px;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 11px;
+
+            color: var(--muted);
+
+            font-size: 13px;
+
+            background:
+                rgba(255,255,255,.022);
+        }
+
+
+        /* ==========================================
+           EMPTY STATE
+        ========================================== */
+
+        .empty-state {
+            padding: 35px 15px;
+
+            text-align: center;
+
+            color: var(--muted);
+        }
+
+
+        /* ==========================================
+           TOAST
+        ========================================== */
+
+        #toast {
+            position: fixed;
+
+            right: 22px;
+            bottom: 22px;
+
+            z-index: 9999;
+
+            padding: 13px 17px;
+
+            border-radius: 10px;
+
+            background: #111b26;
+
+            border:
+                1px solid
+                rgba(255,48,69,.3);
+
+            color: white;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            opacity: 0;
+
+            transform:
+                translateY(12px);
+
+            pointer-events: none;
+
+            transition: .25s ease;
+        }
+
+        #toast.show {
+            opacity: 1;
+
+            transform:
+                translateY(0);
+        }
+
+
+        /* ==========================================
+           MOBILE
+        ========================================== */
+
+        @media (max-width: 900px) {
+
+            .incident-hero {
+                flex-direction: column;
+            }
+
+            .status-control {
+                width: 100%;
+            }
+
+            .status-control select {
+                flex: 1;
+            }
+
+            .incident-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+
+        @media (max-width: 700px) {
+
+            .navbar .nav-links {
+                gap: 16px;
+            }
+
+            .navbar .nav-links a {
+                font-size: 13px;
+            }
+        }
+
+
+        @media (max-width: 600px) {
+
+            .incident-page {
+                padding-top: 95px;
+            }
+
+            .incident-container {
+                width:
+                    min(
+                        calc(100% - 24px),
+                        1180px
+                    );
+            }
+
+            .incident-card {
+                padding: 17px;
+            }
+
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .status-control {
+                flex-direction: column;
+
+                align-items: stretch;
+            }
+
+            .status-control select,
+            .status-control button {
+                width: 100%;
+            }
+
+            .incident-map {
+                height: 280px;
+            }
+
+            .team-row {
+                align-items: flex-start;
+
+                flex-direction: column;
+
+                gap: 4px;
+            }
+
+            .team-value {
+                text-align: left;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- ==========================================
+         NAVBAR
+    =========================================== -->
+
+    <nav class="navbar">
+
+        <div class="container">
+
+
+            <!-- LOGO -->
+
+            <a
+                href="index.html"
+                class="logo"
+            >
+
+                <span class="logo-mark">
+                    R
+                </span>
+
+                <span class="logo-word">
+
+                    <span>ResQ</span><span class="logo-red">Net</span>
+
+                </span>
+
+            </a>
+
+
+            <!-- NAVIGATION
+                 NOW ON RIGHT
+            -->
+
+            <div class="nav-links">
+
+                <a href="index.html">
+                    Home
+                </a>
+
+                <a href="report.html">
+                    Report Emergency
+                </a>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- ==========================================
+         INCIDENT PAGE
+    =========================================== -->
+
+    <main class="incident-page">
+
+        <div class="incident-container">
+
+
+            <!-- BREADCRUMB -->
+
+            <div class="incident-breadcrumb">
+
+                <a href="dashboard.html">
+                    Dashboard
+                </a>
+
+                <span>/</span>
+
+                <span>
+                    Incident Response
+                </span>
+
+            </div>
+
+
+
+            <!-- HERO -->
+
+            <div class="incident-hero">
+
+
+                <div class="incident-hero-left">
+
+                    <div class="incident-kicker">
+                        LIVE INCIDENT
+                    </div>
+
+                    <h1 class="incident-title">
+                        Incident Response
+                    </h1>
+
+                    <p class="incident-subtitle">
+
+                        Tracking emergency
+
+                        <span
+                            id="incidentId"
+                            class="incident-id"
+                        >
+                            —
+                        </span>
+
+                    </p>
+
+                </div>
+
+
+
+                <!-- STATUS -->
+
+                <div class="status-control">
+
+                    <select id="statusSelect">
+
+                        <option value="Reported">
+                            Reported
+                        </option>
+
+                        <option value="Acknowledged">
+                            Acknowledged
+                        </option>
+
+                        <option value="Responding">
+                            Responding
+                        </option>
+
+                        <option value="Resolved">
+                            Resolved
+                        </option>
+
+                    </select>
+
+
+                    <button
+                        type="button"
+                        id="updateStatusBtn"
+                    >
+                        Update Status
+                    </button>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ======================================
+                 MAIN GRID
+            ======================================= -->
+
+            <div class="incident-grid">
+
+
+                <!-- ==================================
+                     LEFT
+                =================================== -->
+
+                <div class="incident-left">
+
+
+                    <!-- RESPONSE TIMELINE -->
+
+                    <section class="incident-card">
+
+                        <div class="incident-card-title">
+
+                            <div>
+
+                                <h2>
+                                    Response Timeline
+                                </h2>
+
+                                <span>
+                                    Live incident progress
+                                </span>
+
+                            </div>
+
+
+                            <span
+                                id="timelineCount"
+                                class="update-count"
+                            >
+                                0 updates
+                            </span>
+
+                        </div>
+
+
+                        <div
+                            id="timeline"
+                            class="timeline"
+                        ></div>
+
+                    </section>
+
+
+
+                    <!-- EMERGENCY DETAILS -->
+
+                    <section class="incident-card">
+
+                        <div class="incident-card-title">
+
+                            <div>
+
+                                <h2>
+                                    Emergency Details
+                                </h2>
+
+                                <span>
+                                    Report information
+                                </span>
+
+                            </div>
+
+
+                            <span
+                                id="currentStatus"
+                                class="status-badge"
+                            >
+                                Reported
+                            </span>
+
+                        </div>
+
+
+                        <div class="details-grid">
+
+
+                            <div class="detail-box">
+
+                                <div class="detail-label">
+                                    Emergency Type
+                                </div>
+
+                                <div
+                                    id="incidentType"
+                                    class="detail-value"
+                                >
+                                    —
+                                </div>
+
+                            </div>
+
+
+
+                            <div class="detail-box">
+
+                                <div class="detail-label">
+                                    Severity
+                                </div>
+
+                                <div
+                                    id="incidentSeverity"
+                                    class="detail-value"
+                                >
+                                    —
+                                </div>
+
+                            </div>
+
+
+
+                            <div class="detail-box">
+
+                                <div class="detail-label">
+                                    People Affected
+                                </div>
+
+                                <div
+                                    id="peopleAffected"
+                                    class="detail-value"
+                                >
+                                    —
+                                </div>
+
+                            </div>
+
+
+
+                            <div class="detail-box">
+
+                                <div class="detail-label">
+                                    Current Status
+                                </div>
+
+                                <div
+                                    id="currentStatusText"
+                                    class="detail-value"
+                                >
+                                    See status above
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="description-box">
+
+                            <div class="detail-label">
+                                Description
+                            </div>
+
+                            <div
+                                id="incidentDescription"
+                                class="description-text"
+                            >
+                                —
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+
+                    <!-- RESPONSE TEAM -->
+
+                    <section class="incident-card">
+
+                        <div class="incident-card-title">
+
+                            <div>
+
+                                <h2>
+                                    Response Team
+                                </h2>
+
+                                <span>
+                                    Assigned emergency unit
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="team-list">
+
+
+                            <div class="team-row">
+
+                                <span class="team-label">
+                                    Unit
+                                </span>
+
+                                <span
+                                    id="responderUnit"
+                                    class="team-value"
+                                >
+                                    Not assigned
+                                </span>
+
+                            </div>
+
+
+
+                            <div class="team-row">
+
+                                <span class="team-label">
+                                    Responder
+                                </span>
+
+                                <span
+                                    id="responderName"
+                                    class="team-value"
+                                >
+                                    Awaiting responder
+                                </span>
+
+                            </div>
+
+
+
+                            <div class="team-row">
+
+                                <span class="team-label">
+                                    Contact
+                                </span>
+
+                                <span
+                                    id="responderContact"
+                                    class="team-value"
+                                >
+                                    —
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+                </div>
+
+
+
+                <!-- ==================================
+                     RIGHT
+                =================================== -->
+
+                <div class="incident-right">
+
+
+                    <!-- LOCATION -->
+
+                    <section class="incident-card">
+
+                        <div class="incident-card-title">
+
+                            <div>
+
+                                <h2>
+                                    Incident Location
+                                </h2>
+
+                                <span>
+                                    Reported emergency location
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            id="incidentMap"
+                            class="incident-map"
+                        ></div>
+
+
+                        <div
+                            id="reportedLocation"
+                            class="location-text"
+                        >
+                            Location not available
+                        </div>
+
+                    </section>
+
+
+
+                    <!-- REPORTER -->
+
+                    <section class="incident-card">
+
+                        <div class="incident-card-title">
+
+                            <div>
+
+                                <h2>
+                                    Reporter
+                                </h2>
+
+                                <span>
+                                    Emergency reporter information
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="team-list">
+
+
+                            <div class="team-row">
+
+                                <span class="team-label">
+                                    Name
+                                </span>
+
+                                <span
+                                    id="reporterName"
+                                    class="team-value"
+                                >
+                                    —
+                                </span>
+
+                            </div>
+
+
+
+                            <div class="team-row">
+
+                                <span class="team-label">
+                                    Phone
+                                </span>
+
+                                <span
+                                    id="reporterPhone"
+                                    class="team-value"
+                                >
+                                    —
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+
+    <!-- TOAST -->
+
+    <div id="toast"></div>
+
+
+
+    <!-- LEAFLET JS -->
+
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    ></script>
+
+
+    <!-- INCIDENT JS -->
+
+    <script src="incident.js"></script>
+    <script src="auth.js"></script>
+
+
+</body>
+</html>

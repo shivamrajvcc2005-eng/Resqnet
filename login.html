@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Login | ResQNet</title>
+
+    <style>
+
+        :root {
+            --bg: #030609;
+            --bg2: #070d14;
+            --card: #0a111a;
+            --border: rgba(255,255,255,.08);
+            --text: #f7f9fc;
+            --muted: #8c99a8;
+            --red: #ff3045;
+            --red-light: #ff6673;
+        }
+
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(
+                    circle at 50% 0%,
+                    rgba(255,48,69,.10),
+                    transparent 35%
+                ),
+                var(--bg);
+
+            color: var(--text);
+
+            font-family:
+                Inter,
+                Arial,
+                Helvetica,
+                sans-serif;
+        }
+
+
+        .login-page {
+            min-height: 100vh;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 30px 18px;
+        }
+
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 440px;
+        }
+
+
+        .brand {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+
+            margin-bottom: 28px;
+
+            text-decoration: none;
+        }
+
+
+        .brand-mark {
+            width: 48px;
+            height: 48px;
+
+            border-radius: 13px;
+
+            display: grid;
+            place-items: center;
+
+            background: var(--red);
+
+            color: white;
+
+            font-size: 25px;
+            font-weight: 900;
+        }
+
+
+        .brand-name {
+            font-size: 27px;
+            font-weight: 900;
+            letter-spacing: -1.5px;
+
+            color: white;
+        }
+
+
+        .brand-name span {
+            color: var(--red);
+        }
+
+
+        .login-card {
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,.045),
+                    rgba(255,255,255,.018)
+                );
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 20px;
+
+            padding: 34px;
+
+            box-shadow:
+                0 25px 80px
+                rgba(0,0,0,.35);
+        }
+
+
+        .heading {
+            margin-bottom: 26px;
+        }
+
+
+        .heading .eyebrow {
+            color: var(--red);
+
+            font-size: 12px;
+            font-weight: 900;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1.5px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .heading h1 {
+            font-size: 30px;
+            line-height: 1.1;
+
+            margin-bottom: 8px;
+        }
+
+
+        .heading p {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+
+        .tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+
+            padding: 4px;
+
+            margin-bottom: 24px;
+
+            background: rgba(255,255,255,.035);
+
+            border: 1px solid var(--border);
+
+            border-radius: 12px;
+        }
+
+
+        .tab {
+            border: 0;
+
+            background: transparent;
+
+            color: var(--muted);
+
+            padding: 11px;
+
+            border-radius: 9px;
+
+            font: inherit;
+
+            font-size: 13px;
+            font-weight: 800;
+
+            cursor: pointer;
+        }
+
+
+        .tab.active {
+            background: var(--red);
+            color: white;
+        }
+
+
+        .form {
+            display: none;
+        }
+
+
+        .form.active {
+            display: block;
+        }
+
+
+        .field {
+            margin-bottom: 17px;
+        }
+
+
+        .field label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-size: 13px;
+
+            font-weight: 800;
+
+            color: #dce2e9;
+        }
+
+
+        .field input {
+            width: 100%;
+
+            height: 48px;
+
+            padding: 0 14px;
+
+            border-radius: 11px;
+
+            border:
+                1px solid
+                rgba(255,255,255,.09);
+
+            background:
+                rgba(255,255,255,.035);
+
+            color: white;
+
+            outline: none;
+
+            font: inherit;
+
+            font-size: 14px;
+
+            transition: .2s ease;
+        }
+
+
+        .field input:focus {
+            border-color:
+                rgba(255,48,69,.65);
+
+            background:
+                rgba(255,48,69,.045);
+
+            box-shadow:
+                0 0 0 3px
+                rgba(255,48,69,.08);
+        }
+
+
+        .submit-btn {
+            width: 100%;
+
+            height: 50px;
+
+            border: 0;
+
+            border-radius: 11px;
+
+            background: var(--red);
+
+            color: white;
+
+            font: inherit;
+
+            font-weight: 900;
+
+            font-size: 14px;
+
+            cursor: pointer;
+
+            transition: .2s ease;
+
+            margin-top: 5px;
+        }
+
+
+        .submit-btn:hover {
+            background: var(--red-light);
+
+            transform: translateY(-1px);
+        }
+
+
+        .submit-btn:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+
+        .message {
+            display: none;
+
+            margin-bottom: 17px;
+
+            padding: 12px 14px;
+
+            border-radius: 10px;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+
+        .message.show {
+            display: block;
+        }
+
+
+        .message.error {
+            background:
+                rgba(255,48,69,.09);
+
+            border:
+                1px solid
+                rgba(255,48,69,.25);
+
+            color:
+                #ff9aa4;
+        }
+
+
+        .message.success {
+            background:
+                rgba(60,200,130,.08);
+
+            border:
+                1px solid
+                rgba(60,200,130,.22);
+
+            color:
+                #8be0b8;
+        }
+
+
+        .back-home {
+            display: block;
+
+            text-align: center;
+
+            margin-top: 22px;
+
+            color: var(--muted);
+
+            text-decoration: none;
+
+            font-size: 13px;
+        }
+
+
+        .back-home:hover {
+            color: white;
+        }
+
+
+        .demo-note {
+            margin-top: 20px;
+
+            padding: 12px;
+
+            border-radius: 10px;
+
+            background:
+                rgba(255,255,255,.025);
+
+            border:
+                1px solid
+                rgba(255,255,255,.06);
+
+            color: var(--muted2, #667586);
+
+            font-size: 11px;
+
+            line-height: 1.5;
+
+            text-align: center;
+        }
+
+
+        @media (max-width: 480px) {
+
+            .login-card {
+                padding: 25px 20px;
+            }
+
+            .heading h1 {
+                font-size: 26px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <main class="login-page">
+
+        <div class="login-wrapper">
+
+
+            <!-- BRAND -->
+
+            <a
+                href="index.html"
+                class="brand"
+            >
+
+                <span class="brand-mark">
+                    R
+                </span>
+
+                <span class="brand-name">
+                    ResQ<span>Net</span>
+                </span>
+
+            </a>
+
+
+            <!-- CARD -->
+
+            <section class="login-card">
+
+
+                <div class="heading">
+
+                    <div class="eyebrow">
+                        Emergency Response Platform
+                    </div>
+
+                    <h1>
+                        Welcome to ResQNet
+                    </h1>
+
+                    <p>
+                        Sign in to access incident
+                        response and coordination.
+                    </p>
+
+                </div>
+
+
+                <!-- TABS -->
+
+                <div class="tabs">
+
+                    <button
+                        type="button"
+                        class="tab active"
+                        id="loginTab"
+                    >
+                        Login
+                    </button>
+
+                    <button
+                        type="button"
+                        class="tab"
+                        id="signupTab"
+                    >
+                        Create Account
+                    </button>
+
+                </div>
+
+
+                <!-- MESSAGE -->
+
+                <div
+                    id="authMessage"
+                    class="message"
+                ></div>
+
+
+                <!-- LOGIN FORM -->
+
+                <form
+                    id="loginForm"
+                    class="form active"
+                >
+
+                    <div class="field">
+
+                        <label for="loginEmail">
+                            Email
+                        </label>
+
+                        <input
+                            id="loginEmail"
+                            type="email"
+                            placeholder="you@example.com"
+                            autocomplete="email"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="loginPassword">
+                            Password
+                        </label>
+
+                        <input
+                            id="loginPassword"
+                            type="password"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="submit-btn"
+                        id="loginButton"
+                    >
+                        Login
+                    </button>
+
+                </form>
+
+
+                <!-- SIGNUP FORM -->
+
+                <form
+                    id="signupForm"
+                    class="form"
+                >
+
+                    <div class="field">
+
+                        <label for="signupName">
+                            Full Name
+                        </label>
+
+                        <input
+                            id="signupName"
+                            type="text"
+                            placeholder="Your name"
+                            autocomplete="name"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="signupEmail">
+                            Email
+                        </label>
+
+                        <input
+                            id="signupEmail"
+                            type="email"
+                            placeholder="you@example.com"
+                            autocomplete="email"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="signupPassword">
+                            Password
+                        </label>
+
+                        <input
+                            id="signupPassword"
+                            type="password"
+                            placeholder="Minimum 6 characters"
+                            minlength="6"
+                            autocomplete="new-password"
+                            required
+                        >
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="submit-btn"
+                        id="signupButton"
+                    >
+                        Create Account
+                    </button>
+
+                </form>
+
+
+                <a
+                    href="index.html"
+                    class="back-home"
+                >
+                    ← Back to Home
+                </a>
+
+
+                <div class="demo-note">
+                    Hackathon prototype authentication.
+                    Account data is stored locally in
+                    your browser.
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+    <!-- AUTH SYSTEM -->
+
+    <script src="auth.js"></script>
+
+
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                const loginTab =
+                    document.getElementById(
+                        "loginTab"
+                    );
+
+                const signupTab =
+                    document.getElementById(
+                        "signupTab"
+                    );
+
+                const loginForm =
+                    document.getElementById(
+                        "loginForm"
+                    );
+
+                const signupForm =
+                    document.getElementById(
+                        "signupForm"
+                    );
+
+                const message =
+                    document.getElementById(
+                        "authMessage"
+                    );
+
+
+                function showMessage(
+                    text,
+                    type
+                ) {
+
+                    message.textContent =
+                        text;
+
+                    message.className =
+                        "message show " +
+                        type;
+                }
+
+
+                function clearMessage() {
+
+                    message.textContent =
+                        "";
+
+                    message.className =
+                        "message";
+                }
+
+
+                function showLogin() {
+
+                    loginTab.classList.add(
+                        "active"
+                    );
+
+                    signupTab.classList.remove(
+                        "active"
+                    );
+
+                    loginForm.classList.add(
+                        "active"
+                    );
+
+                    signupForm.classList.remove(
+                        "active"
+                    );
+
+                    clearMessage();
+                }
+
+
+                function showSignup() {
+
+                    signupTab.classList.add(
+                        "active"
+                    );
+
+                    loginTab.classList.remove(
+                        "active"
+                    );
+
+                    signupForm.classList.add(
+                        "active"
+                    );
+
+                    loginForm.classList.remove(
+                        "active"
+                    );
+
+                    clearMessage();
+                }
+
+
+                loginTab.addEventListener(
+                    "click",
+                    showLogin
+                );
+
+
+                signupTab.addEventListener(
+                    "click",
+                    showSignup
+                );
+
+
+                /* =========================
+                   LOGIN
+                ========================= */
+
+                loginForm.addEventListener(
+                    "submit",
+                    async function (event) {
+
+                        event.preventDefault();
+
+                        clearMessage();
+
+
+                        const button =
+                            document.getElementById(
+                                "loginButton"
+                            );
+
+
+                        const email =
+                            document.getElementById(
+                                "loginEmail"
+                            ).value;
+
+
+                        const password =
+                            document.getElementById(
+                                "loginPassword"
+                            ).value;
+
+
+                        button.disabled =
+                            true;
+
+                        button.textContent =
+                            "Signing in...";
+
+
+                        try {
+
+                            const result =
+                                await window.ResQAuth.login(
+                                    email,
+                                    password
+                                );
+
+
+                            if (
+                                !result.success
+                            ) {
+
+                                showMessage(
+                                    result.message,
+                                    "error"
+                                );
+
+                                return;
+                            }
+
+
+                            showMessage(
+                                "Login successful. Opening dashboard...",
+                                "success"
+                            );
+
+
+                            setTimeout(
+                                function () {
+
+                                    window.location.href =
+                                        "dashboard.html";
+
+                                },
+                                700
+                            );
+
+                        } catch (error) {
+
+                            console.error(
+                                error
+                            );
+
+                            showMessage(
+                                "Something went wrong. Please try again.",
+                                "error"
+                            );
+
+                        } finally {
+
+                            button.disabled =
+                                false;
+
+                            button.textContent =
+                                "Login";
+                        }
+                    }
+                );
+
+
+                /* =========================
+                   SIGNUP
+                ========================= */
+
+                signupForm.addEventListener(
+                    "submit",
+                    async function (event) {
+
+                        event.preventDefault();
+
+                        clearMessage();
+
+
+                        const button =
+                            document.getElementById(
+                                "signupButton"
+                            );
+
+
+                        const name =
+                            document.getElementById(
+                                "signupName"
+                            ).value;
+
+
+                        const email =
+                            document.getElementById(
+                                "signupEmail"
+                            ).value;
+
+
+                        const password =
+                            document.getElementById(
+                                "signupPassword"
+                            ).value;
+
+
+                        button.disabled =
+                            true;
+
+                        button.textContent =
+                            "Creating account...";
+
+
+                        try {
+
+                            const result =
+                                await window.ResQAuth.createAccount(
+                                    name,
+                                    email,
+                                    password
+                                );
+
+
+                            if (
+                                !result.success
+                            ) {
+
+                                showMessage(
+                                    result.message,
+                                    "error"
+                                );
+
+                                return;
+                            }
+
+
+                            showMessage(
+                                "Account created successfully. Opening dashboard...",
+                                "success"
+                            );
+
+
+                            setTimeout(
+                                function () {
+
+                                    window.location.href =
+                                        "dashboard.html";
+
+                                },
+                                700
+                            );
+
+                        } catch (error) {
+
+                            console.error(
+                                error
+                            );
+
+                            showMessage(
+                                "Could not create account.",
+                                "error"
+                            );
+
+                        } finally {
+
+                            button.disabled =
+                                false;
+
+                            button.textContent =
+                                "Create Account";
+                        }
+                    }
+                );
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>

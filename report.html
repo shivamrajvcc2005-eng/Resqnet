@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Report Emergency — ResQNet</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+    <style>
+
+        /* =========================================
+           REPORT PAGE
+        ========================================= */
+
+        .report-page {
+            min-height: 100vh;
+
+            background:
+                radial-gradient(
+                    circle at 85% 10%,
+                    rgba(255,48,69,.07),
+                    transparent 28%
+                ),
+                var(--bg);
+        }
+
+
+        /* =========================================
+           RESQNET LOGO
+           Screenshot-style logo
+        ========================================= */
+
+        .report-page .resq-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+
+            text-decoration: none;
+
+            flex-shrink: 0;
+        }
+
+        .report-page .resq-logo-mark {
+            width: 42px;
+            height: 42px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 12px;
+
+            background: #ff3045;
+            color: #ffffff;
+
+            font-size: 22px;
+            font-weight: 900;
+
+            line-height: 1;
+
+            box-shadow:
+                0 8px 24px rgba(255,48,69,.20);
+
+            transition: .2s ease;
+        }
+
+        .report-page .resq-logo:hover .resq-logo-mark {
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 10px 28px rgba(255,48,69,.30);
+        }
+
+        .report-page .resq-logo-name {
+            font-size: 21px;
+            font-weight: 800;
+
+            letter-spacing: -.7px;
+            line-height: 1;
+        }
+
+        .report-page .resq-logo-white {
+            color: #ffffff;
+        }
+
+        .report-page .resq-logo-red {
+            color: #ff3045;
+        }
+
+
+        /* =========================================
+           MAIN
+        ========================================= */
+
+        .report-main {
+            width: min(1080px, calc(100% - 40px));
+            margin: auto;
+
+            padding: 110px 0 70px;
+        }
+
+
+        /* =========================================
+           HEADER
+        ========================================= */
+
+        .report-header {
+            margin-bottom: 28px;
+        }
+
+        .report-header h1 {
+            margin: 0;
+
+            font-size:
+                clamp(2rem, 4vw, 3rem);
+
+            letter-spacing: -1.5px;
+        }
+
+        .report-header p {
+            color: var(--muted);
+
+            margin: 12px 0 0;
+
+            line-height: 1.7;
+
+            max-width: 650px;
+        }
+
+
+        /* =========================================
+           LAYOUT
+        ========================================= */
+
+        .report-layout {
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1.5fr)
+                minmax(280px, .75fr);
+
+            gap: 20px;
+
+            align-items: start;
+        }
+
+
+        /* =========================================
+           CARDS
+        ========================================= */
+
+        .report-card {
+            background: rgba(8,14,21,.86);
+
+            border: 1px solid var(--border);
+
+            border-radius: var(--radius);
+
+            overflow: hidden;
+
+            margin-bottom: 18px;
+        }
+
+        .report-card:last-child {
+            margin-bottom: 0;
+        }
+
+
+        /* =========================================
+           SECTION HEADER
+        ========================================= */
+
+        .section-header {
+            padding: 19px 21px;
+
+            border-bottom:
+                1px solid var(--border);
+        }
+
+        .section-header h2 {
+            margin: 0;
+
+            font-size: .98rem;
+        }
+
+        .section-header p {
+            color: var(--muted2);
+
+            font-size: .72rem;
+
+            margin: 5px 0 0;
+        }
+
+        .section-body {
+            padding: 21px;
+        }
+
+
+        /* =========================================
+           FIELDS
+        ========================================= */
+
+        .field {
+            margin-bottom: 20px;
+        }
+
+        .field:last-child {
+            margin-bottom: 0;
+        }
+
+        .field label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-size: .78rem;
+
+            font-weight: 600;
+        }
+
+        .required {
+            color: var(--red);
+        }
+
+
+        /* =========================================
+           INCIDENT TYPE
+        ========================================= */
+
+        .radio-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 10px;
+        }
+
+        .radio-card {
+            position: relative;
+        }
+
+        .radio-card input {
+            position: absolute;
+
+            opacity: 0;
+
+            pointer-events: none;
+        }
+
+        .radio-card label {
+            margin: 0;
+
+            min-height: 72px;
+
+            padding: 12px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: center;
+
+            align-items: center;
+
+            gap: 5px;
+
+            text-align: center;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 11px;
+
+            background:
+                rgba(255,255,255,.018);
+
+            cursor: pointer;
+
+            transition: .2s ease;
+        }
+
+        .radio-card label:hover {
+            border-color:
+                var(--border-hover);
+
+            background:
+                rgba(255,255,255,.028);
+        }
+
+        .radio-card input:checked + label {
+            border-color:
+                rgba(255,48,69,.55);
+
+            background:
+                var(--red-soft);
+
+            color: white;
+
+            box-shadow:
+                inset 0 0 0 1px
+                rgba(255,48,69,.05);
+        }
+
+        .radio-icon {
+            font-size: 1.2rem;
+        }
+
+        .radio-name {
+            font-size: .72rem;
+        }
+
+
+        /* =========================================
+           INPUTS
+        ========================================= */
+
+        .input,
+        .textarea {
+            width: 100%;
+
+            box-sizing: border-box;
+
+            background: #070d14;
+
+            border:
+                1px solid var(--border);
+
+            color: var(--text);
+
+            border-radius: 10px;
+
+            padding: 12px 13px;
+
+            outline: none;
+
+            font: inherit;
+
+            font-size: .8rem;
+
+            transition: .2s ease;
+        }
+
+        .input::placeholder,
+        .textarea::placeholder {
+            color: var(--muted2);
+        }
+
+        .input:focus,
+        .textarea:focus {
+            border-color:
+                rgba(255,48,69,.45);
+
+            box-shadow:
+                0 0 0 3px
+                rgba(255,48,69,.06);
+        }
+
+        .textarea {
+            min-height: 120px;
+
+            resize: vertical;
+        }
+
+        .field-row {
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 13px;
+        }
+
+
+        /* =========================================
+           LOCATION
+        ========================================= */
+
+        .location-actions {
+            display: flex;
+
+            gap: 9px;
+
+            margin-bottom: 10px;
+        }
+
+        .location-btn {
+            border:
+                1px solid var(--border);
+
+            background:
+                rgba(255,255,255,.025);
+
+            color: var(--text);
+
+            border-radius: 9px;
+
+            padding: 10px 13px;
+
+            cursor: pointer;
+
+            font-size: .75rem;
+
+            transition: .2s ease;
+        }
+
+        .location-btn:hover {
+            border-color:
+                var(--border-hover);
+
+            background:
+                rgba(255,255,255,.05);
+        }
+
+        .location-btn:active {
+            transform: scale(.98);
+        }
+
+        .location-status {
+            color: var(--muted);
+
+            font-size: .72rem;
+
+            line-height: 1.5;
+        }
+
+
+        /* =========================================
+           SEVERITY
+        ========================================= */
+
+        .severity-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 8px;
+        }
+
+        .severity-card {
+            position: relative;
+        }
+
+        .severity-card input {
+            position: absolute;
+
+            opacity: 0;
+        }
+
+        .severity-card label {
+            margin: 0;
+
+            padding: 11px 8px;
+
+            text-align: center;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 9px;
+
+            cursor: pointer;
+
+            font-size: .72rem;
+
+            background:
+                rgba(255,255,255,.018);
+
+            transition: .2s ease;
+        }
+
+        .severity-card label:hover {
+            border-color:
+                var(--border-hover);
+        }
+
+        .severity-card input:checked + label {
+            border-color:
+                rgba(255,48,69,.5);
+
+            background:
+                var(--red-soft);
+
+            color: #ffffff;
+        }
+
+
+        /* =========================================
+           CHARACTER COUNT
+        ========================================= */
+
+        .char-count {
+            text-align: right;
+
+            color: var(--muted2);
+
+            font-size: .67rem;
+
+            margin-top: 5px;
+        }
+
+
+        /* =========================================
+           SUBMIT
+        ========================================= */
+
+        .submit-btn {
+            width: 100%;
+
+            border: 0;
+
+            border-radius: 10px;
+
+            padding: 14px;
+
+            background: var(--red);
+
+            color: white;
+
+            cursor: pointer;
+
+            font-size: .84rem;
+
+            font-weight: 700;
+
+            transition: .2s ease;
+        }
+
+        .submit-btn:hover {
+            background: var(--red-light);
+
+            transform: translateY(-1px);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+
+        /* =========================================
+           ERROR
+        ========================================= */
+
+        .error-message {
+            display: none;
+
+            background:
+                rgba(255,48,69,.08);
+
+            border:
+                1px solid rgba(255,48,69,.18);
+
+            color: #ff8993;
+
+            border-radius: 9px;
+
+            padding: 11px 13px;
+
+            margin-bottom: 15px;
+
+            font-size: .75rem;
+
+            line-height: 1.5;
+        }
+
+
+        /* =========================================
+           SIDE CARD
+        ========================================= */
+
+        .side-card {
+            background:
+                rgba(8,14,21,.86);
+
+            border:
+                1px solid var(--border);
+
+            border-radius: var(--radius);
+
+            padding: 21px;
+
+            margin-bottom: 18px;
+        }
+
+        .side-card h3 {
+            margin: 0 0 15px;
+
+            font-size: .92rem;
+        }
+
+
+        /* =========================================
+           WORKFLOW
+        ========================================= */
+
+        .workflow-step {
+            display: flex;
+
+            gap: 11px;
+
+            margin-bottom: 17px;
+        }
+
+        .workflow-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-number {
+            width: 27px;
+            height: 27px;
+
+            border-radius: 8px;
+
+            display: grid;
+
+            place-items: center;
+
+            flex-shrink: 0;
+
+            background:
+                var(--red-soft);
+
+            color:
+                var(--red-light);
+
+            font-size: .7rem;
+
+            font-weight: 700;
+        }
+
+        .workflow-step strong {
+            display: block;
+
+            font-size: .76rem;
+
+            margin-bottom: 3px;
+        }
+
+        .workflow-step span {
+            color: var(--muted);
+
+            font-size: .7rem;
+
+            line-height: 1.5;
+        }
+
+
+        /* =========================================
+           EMERGENCY NOTE
+        ========================================= */
+
+        .emergency-note {
+            background:
+                var(--red-soft);
+
+            border:
+                1px solid rgba(255,48,69,.13);
+
+            border-radius: 11px;
+
+            padding: 15px;
+        }
+
+        .emergency-note strong {
+            display: block;
+
+            font-size: .76rem;
+
+            margin-bottom: 6px;
+        }
+
+        .emergency-note p {
+            color: var(--muted);
+
+            font-size: .7rem;
+
+            line-height: 1.55;
+
+            margin: 0;
+        }
+
+
+        /* =========================================
+           SUCCESS SCREEN
+        ========================================= */
+
+        .success-screen {
+            display: none;
+
+            text-align: center;
+
+            padding: 55px 25px;
+        }
+
+        .success-icon {
+            width: 65px;
+            height: 65px;
+
+            border-radius: 18px;
+
+            display: grid;
+
+            place-items: center;
+
+            margin: 0 auto 18px;
+
+            background:
+                var(--red-soft);
+
+            border:
+                1px solid rgba(255,48,69,.15);
+
+            color:
+                var(--red-light);
+
+            font-size: 1.5rem;
+        }
+
+        .success-screen h2 {
+            margin: 0 0 8px;
+        }
+
+        .success-screen p {
+            color: var(--muted);
+
+            font-size: .8rem;
+
+            line-height: 1.6;
+
+            max-width: 430px;
+
+            margin: 0 auto 17px;
+        }
+
+        .generated-id {
+            display: inline-block;
+
+            background:
+                rgba(255,255,255,.025);
+
+            border:
+                1px solid var(--border);
+
+            padding: 10px 15px;
+
+            border-radius: 9px;
+
+            color:
+                var(--red-light);
+
+            font-size: .82rem;
+
+            font-weight: 700;
+
+            margin-bottom: 20px;
+        }
+
+        .success-actions {
+            display: flex;
+
+            justify-content: center;
+
+            gap: 10px;
+        }
+
+        .success-link {
+            text-decoration: none;
+
+            border:
+                1px solid var(--border);
+
+            color: var(--text);
+
+            padding: 10px 14px;
+
+            border-radius: 9px;
+
+            font-size: .75rem;
+
+            transition: .2s ease;
+        }
+
+        .success-link:hover {
+            border-color:
+                var(--border-hover);
+
+            background:
+                rgba(255,255,255,.03);
+        }
+
+        .success-link.primary {
+            background: var(--red);
+
+            border-color: var(--red);
+
+            color: white;
+        }
+
+        .success-link.primary:hover {
+            background: var(--red-light);
+
+            border-color: var(--red-light);
+        }
+
+
+        /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+        @media (max-width: 850px) {
+
+            .report-layout {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+
+        @media (max-width: 650px) {
+
+            .report-main {
+                width:
+                    min(100% - 24px, 1080px);
+
+                padding-top: 90px;
+            }
+
+            .report-page .resq-logo-mark {
+                width: 38px;
+                height: 38px;
+
+                border-radius: 11px;
+
+                font-size: 20px;
+            }
+
+            .report-page .resq-logo-name {
+                font-size: 19px;
+            }
+
+            .radio-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .severity-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .field-row {
+                grid-template-columns: 1fr;
+            }
+
+            .success-actions {
+                flex-direction: column;
+            }
+
+            .success-link {
+                text-align: center;
+            }
+
+        }
+
+
+        @media (max-width: 420px) {
+
+            .report-main {
+                width:
+                    calc(100% - 18px);
+            }
+
+            .section-body {
+                padding: 16px;
+            }
+
+            .section-header {
+                padding: 16px;
+            }
+
+            .radio-card label {
+                min-height: 68px;
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body class="report-page">
+
+
+    <!-- =========================================
+         NAVBAR
+    ========================================= -->
+
+    <nav class="navbar">
+
+        <div class="nav-container">
+
+
+            <!-- SCREENSHOT-STYLE RESQNET LOGO -->
+
+            <a
+                href="index.html"
+                class="resq-logo"
+                aria-label="ResQNet Home"
+            >
+
+                <span class="resq-logo-mark">
+                    R
+                </span>
+
+                <span class="resq-logo-name">
+
+                    <span class="resq-logo-white">
+                        ResQ
+                    </span>
+
+                    <span class="resq-logo-red">
+                        Net
+                    </span>
+
+                </span>
+
+            </a>
+
+
+            <div class="nav-links">
+
+                <a href="index.html">
+                    Home
+                </a>
+
+                <a href="index.html#features">
+                    Features
+                </a>
+
+                <a href="index.html#how-it-works">
+                    How It Works
+                </a>
+
+                <a href="dashboard.html">
+                    Dashboard
+                </a>
+
+            </div>
+
+
+            <a
+                href="report.html"
+                class="nav-cta"
+            >
+                Report Emergency
+            </a>
+
+        </div>
+
+    </nav>
+
+
+    <!-- =========================================
+         MAIN
+    ========================================= -->
+
+    <main class="report-main">
+
+
+        <div class="report-header">
+
+            <h1>
+                Report an Emergency.
+            </h1>
+
+            <p>
+                Provide accurate information so responders can
+                understand, prioritize and coordinate the emergency quickly.
+            </p>
+
+        </div>
+
+
+        <div
+            id="reportFormLayout"
+            class="report-layout"
+        >
+
+
+            <!-- =================================
+                 FORM
+            ================================= -->
+
+            <form id="emergencyForm">
+
+
+                <!-- INCIDENT TYPE -->
+
+                <section class="report-card">
+
+                    <div class="section-header">
+
+                        <h2>
+                            What happened?
+                        </h2>
+
+                        <p>
+                            Select the type of emergency.
+                        </p>
+
+                    </div>
+
+
+                    <div class="section-body">
+
+                        <div class="radio-grid">
+
+
+                            <div class="radio-card">
+
+                                <input
+                                    type="radio"
+                                    id="accident"
+                                    name="incidentType"
+                                    value="Road Accident"
+                                >
+
+                                <label for="accident">
+
+                                    <span class="radio-icon">
+                                        🚗
+                                    </span>
+
+                                    <span class="radio-name">
+                                        Road Accident
+                                    </span>
+
+                                </label>
+
+                            </div>
+
+
+                            <div class="radio-card">
+
+                                <input
+                                    type="radio"
+                                    id="fire"
+                                    name="incidentType"
+                                    value="Fire"
+                                >
+
+                                <label for="fire">
+
+                                    <span class="radio-icon">
+                                        🔥
+                                    </span>
+
+                                    <span class="radio-name">
+                                        Fire
+                                    </span>
+
+                                </label>
+
+                            </div>
+
+
+                            <div class="radio-card">
+
+                                <input
+                                    type="radio"
+                                    id="medical"
+                                    name="incidentType"
+                                    value="Medical"
+                                >
+
+                                <label for="medical">
+
+                                    <span class="radio-icon">
+                                        ✚
+                                    </span>
+
+                                    <span class="radio-name">
+                                        Medical
+                                    </span>
+
+                                </label>
+
+                            </div>
+
+
+                            <div class="radio-card">
+
+                                <input
+                                    type="radio"
+                                    id="flood"
+                                    name="incidentType"
+                                    value="Flood"
+                                >
+
+                                <label for="flood">
+
+                                    <span class="radio-icon">
+                                        🌊
+                                    </span>
+
+                                    <span class="radio-name">
+                                        Flood
+                                    </span>
+
+                                </label>
+
+                            </div>
+
+
+                            <div class="radio-card">
+
+                                <input
+                                    type="radio"
+                                    id="security"
+                                    name="incidentType"
+                                    value="Security"
+                                >
+
+                                <label for="security">
+
+                                    <span class="radio-icon">
+                                        🛡
+                                    </span>
+
+                                    <span class="radio-name">
+                                        Security
+                                    </span>
+
+                                </label>
+
+                            </div>
+
+
+                            <div class="radio-card">
+
+                                <input
+                                    type="radio"
+                                    id="other"
+                                    name="incidentType"
+                                    value="Other"
+                                >
+
+                                <label for="other">
+
+                                    <span class="radio-icon">
+                                        ⚠
+                                    </span>
+
+                                    <span class="radio-name">
+                                        Other
+                                    </span>
+
+                                </label>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================
+                     LOCATION
+                ================================= -->
+
+                <section class="report-card">
+
+                    <div class="section-header">
+
+                        <h2>
+                            Where is it?
+                        </h2>
+
+                        <p>
+                            Share GPS or enter a location manually.
+                        </p>
+
+                    </div>
+
+
+                    <div class="section-body">
+
+
+                        <div class="location-actions">
+
+                            <button
+                                type="button"
+                                id="gpsButton"
+                                class="location-btn"
+                            >
+                                📍 Use My GPS Location
+                            </button>
+
+                        </div>
+
+
+                        <div
+                            id="locationStatus"
+                            class="location-status"
+                        >
+                            GPS location has not been detected yet.
+                        </div>
+
+
+                        <div style="height:12px;"></div>
+
+
+                        <input
+                            type="text"
+                            id="manualLocation"
+                            class="input"
+                            placeholder="Example: Main Market Road, Bhilai"
+                        >
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================
+                     EMERGENCY DETAILS
+                ================================= -->
+
+                <section class="report-card">
+
+                    <div class="section-header">
+
+                        <h2>
+                            Emergency Details
+                        </h2>
+
+                        <p>
+                            Help responders understand the situation.
+                        </p>
+
+                    </div>
+
+
+                    <div class="section-body">
+
+
+                        <div class="field">
+
+                            <label for="peopleCount">
+
+                                People Affected
+
+                                <span class="required">
+                                    *
+                                </span>
+
+                            </label>
+
+
+                            <input
+                                type="number"
+                                id="peopleCount"
+                                class="input"
+                                min="1"
+                                max="999"
+                                placeholder="Example: 2"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label>
+
+                                Severity
+
+                                <span class="required">
+                                    *
+                                </span>
+
+                            </label>
+
+
+                            <div class="severity-grid">
+
+
+                                <div class="severity-card">
+
+                                    <input
+                                        type="radio"
+                                        id="critical"
+                                        name="severity"
+                                        value="Critical"
+                                    >
+
+                                    <label for="critical">
+                                        Critical
+                                    </label>
+
+                                </div>
+
+
+                                <div class="severity-card">
+
+                                    <input
+                                        type="radio"
+                                        id="high"
+                                        name="severity"
+                                        value="High"
+                                    >
+
+                                    <label for="high">
+                                        High
+                                    </label>
+
+                                </div>
+
+
+                                <div class="severity-card">
+
+                                    <input
+                                        type="radio"
+                                        id="medium"
+                                        name="severity"
+                                        value="Medium"
+                                        checked
+                                    >
+
+                                    <label for="medium">
+                                        Medium
+                                    </label>
+
+                                </div>
+
+
+                                <div class="severity-card">
+
+                                    <input
+                                        type="radio"
+                                        id="low"
+                                        name="severity"
+                                        value="Low"
+                                    >
+
+                                    <label for="low">
+                                        Low
+                                    </label>
+
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="description">
+
+                                What is happening?
+
+                                <span class="required">
+                                    *
+                                </span>
+
+                            </label>
+
+
+                            <textarea
+                                id="description"
+                                class="textarea"
+                                maxlength="500"
+                                placeholder="Briefly describe the emergency..."
+                                required
+                            ></textarea>
+
+
+                            <div
+                                id="charCount"
+                                class="char-count"
+                            >
+                                0 / 500
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================
+                     REPORTER
+                ================================= -->
+
+                <section class="report-card">
+
+                    <div class="section-header">
+
+                        <h2>
+                            Reporter Information
+                        </h2>
+
+                        <p>
+                            Optional contact information for follow-up.
+                        </p>
+
+                    </div>
+
+
+                    <div class="section-body">
+
+                        <div class="field-row">
+
+
+                            <div class="field">
+
+                                <label for="reporterName">
+                                    Name
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="reporterName"
+                                    class="input"
+                                    placeholder="Your name"
+                                >
+
+                            </div>
+
+
+                            <div class="field">
+
+                                <label for="reporterPhone">
+                                    Phone
+                                </label>
+
+                                <input
+                                    type="tel"
+                                    id="reporterPhone"
+                                    class="input"
+                                    placeholder="Your phone number"
+                                >
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ERROR -->
+
+                <div
+                    id="formError"
+                    class="error-message"
+                    role="alert"
+                ></div>
+
+
+                <!-- SUBMIT -->
+
+                <button
+                    type="submit"
+                    class="submit-btn"
+                >
+                    Submit Emergency Report →
+                </button>
+
+
+            </form>
+
+
+            <!-- =================================
+                 SIDE PANEL
+            ================================= -->
+
+            <aside>
+
+
+                <div class="side-card">
+
+                    <h3>
+                        How ResQNet Works
+                    </h3>
+
+
+                    <div class="workflow-step">
+
+                        <div class="step-number">
+                            1
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Report
+                            </strong>
+
+                            <span>
+                                Submit the emergency details.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="workflow-step">
+
+                        <div class="step-number">
+                            2
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Locate
+                            </strong>
+
+                            <span>
+                                GPS or manual location is attached.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="workflow-step">
+
+                        <div class="step-number">
+                            3
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Prioritize
+                            </strong>
+
+                            <span>
+                                Severity helps responders prioritize.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="workflow-step">
+
+                        <div class="step-number">
+                            4
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Respond
+                            </strong>
+
+                            <span>
+                                The incident appears on the dashboard.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="side-card">
+
+                    <div class="emergency-note">
+
+                        <strong>
+                            Emergency Note
+                        </strong>
+
+                        <p>
+                            ResQNet is a prototype emergency coordination
+                            platform. For a real emergency, contact your
+                            local emergency services directly.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+            </aside>
+
+
+        </div>
+
+
+        <!-- =================================
+             SUCCESS SCREEN
+        ================================= -->
+
+        <section
+            id="successScreen"
+            class="report-card success-screen"
+        >
+
+            <div class="success-icon">
+                ✓
+            </div>
+
+
+            <h2>
+                Emergency Report Submitted
+            </h2>
+
+
+            <p>
+                Your incident has been recorded and is now
+                available on the ResQNet response dashboard.
+            </p>
+
+
+            <div
+                id="generatedId"
+                class="generated-id"
+            >
+                RQ-2026-0000
+            </div>
+
+
+            <div class="success-actions">
+
+                <a
+                    href="dashboard.html"
+                    class="success-link primary"
+                >
+                    Open Dashboard
+                </a>
+
+
+                <a
+                    href="index.html"
+                    class="success-link"
+                >
+                    Back Home
+                </a>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =========================================
+         IMPORTANT:
+         report.js is in ROOT folder
+         Do NOT use js/report.js
+    ========================================= -->
+
+    <script src="report.js"></script>
+    <script src="auth.js"></script>
+
+</body>
+
+</html>
